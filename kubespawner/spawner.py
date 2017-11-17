@@ -731,7 +731,6 @@ class KubeSpawner(Spawner):
                      pod.status.pod_ip is not None and \
                      pod.metadata.deletion_timestamp is None and \
                      all([cs.ready for cs in pod.status.container_statuses])
-        self.log.info("name: %s", pod.name)
         self.log.info("running? %s", is_running)
         self.log.info("====")
         return is_running
