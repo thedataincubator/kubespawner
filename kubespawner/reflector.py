@@ -94,9 +94,15 @@ class PodReflector(SingletonConfigurable):
         update' cycle on them), we should be ok!
         """
         cur_delay = 0.1
+        from datetime import datetime, timedelta
+        latest_update = datetime.now()
         while True:
             self.log.info("watching for pods with label selector %s in namespace %s", self.label_selector, self.namespace)
             w = watch.Watch()
+            if (latest_update - datetime.now()).seconds > 10:
+                latest_update = datetime.now()
+                self.log.info("10s: %s", self.pods.keys())
+                self.log.info("=========")
             try:
                 resource_version = self._list_and_update()
                 for ev in w.stream(
@@ -116,7 +122,7 @@ class PodReflector(SingletonConfigurable):
                         # This is an atomic operation on the dictionary!
                         self.pods[pod.metadata.name] = pod
                     self.log.info("after %s", self.pods.keys())
-                    self.log.info("=========", self.pods.keys())
+                    self.log.info("=========")
             except Exception:
                 cur_delay = cur_delay * 2
                 if cur_delay > 30:
