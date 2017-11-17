@@ -107,13 +107,16 @@ class PodReflector(SingletonConfigurable):
                 ):
                     cur_delay = 0.1
                     pod = ev['object']
-                    self.log.info("%s %s", pod.metadata, ev)
+                    self.log.info("event: %s", ev['type'])
+                    self.log.info("before %s", self.pods.keys())
                     if ev['type'] == 'DELETED':
                         # This is an atomic delete operation on the dictionary!
                         self.pods.pop(pod.metadata.name, None)
                     else:
                         # This is an atomic operation on the dictionary!
                         self.pods[pod.metadata.name] = pod
+                    self.log.info("after %s", self.pods.keys())
+                    self.log.info("=========", self.pods.keys())
             except Exception:
                 cur_delay = cur_delay * 2
                 if cur_delay > 30:
